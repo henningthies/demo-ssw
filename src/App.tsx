@@ -7,6 +7,7 @@ import { LoginPage } from "@/pages/LoginPage"
 import { DashboardPage } from "@/pages/DashboardPage"
 import { TradesPage } from "@/pages/TradesPage"
 import { TradeForm } from "@/components/TradeForm"
+import { Toaster } from "@/components/ui/sonner"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,7 @@ export default function App() {
           </Routes>
         </AuthProvider>
       </BrowserRouter>
+      <Toaster richColors position="top-right" />
     </QueryClientProvider>
   )
 }

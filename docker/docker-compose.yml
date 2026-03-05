@@ -1,0 +1,20 @@
+# Local development with Java backend
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        VITE_API_URL: /api
+    ports:
+      - "3000:80"
+    depends_on:
+      - java-backend
+
+  # Placeholder for the actual Java backend
+  java-backend:
+    image: openjdk:21-slim
+    ports:
+      - "8080:8080"
+    # In reality: point to the actual Java backend image/service
+    command: echo "Replace with actual Java backend"

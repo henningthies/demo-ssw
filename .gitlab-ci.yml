@@ -1,0 +1,135 @@
+# GitLab CI/CD Pipeline fuer React SPA mit Java Backend
+
+stages:
+  - check
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_VERSION: "22"
+
+# Cache node_modules zwischen Pipeline-Runs
+.node-cache: &node-cache
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+
+# -------------------------------------------
+# Stage 1: Check (Lint + Types)
+# -------------------------------------------
+
+lint:
+  stage: check
+  image: node:${NODE_VERSION}-alpine
+  <<: *node-cache
+  script:
+    - npm ci
+    - npm run lint
+  rules:
+    - if: $CI_MERGE_REQUEST_ID    # Bei jedem MR
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Bei Push auf main
+
+typecheck:
+  stage: check
+  image: node:${NODE_VERSION}-alpine
+  <<: *node-cache
+  script:
+    - npm ci
+    - npx tsc -b
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# -------------------------------------------
+# Stage 2: Test
+# -------------------------------------------
+
+test:
+  stage: test
+  image: node:${NODE_VERSION}-alpine
+  <<: *node-cache
+  script:
+    - npm ci
+    - npm run test -- --reporter=junit --outputFile=test-results.xml
+  artifacts:
+    when: always
+    reports:
+      junit: test-results.xml    # GitLab zeigt Test-Ergebnisse im MR
+  coverage: '/All files\s*\|\s*(\d+\.?\d*)\s*\|/'
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# -------------------------------------------
+# Stage 3: Build
+# -------------------------------------------
+
+build:
+  stage: build
+  image: node:${NODE_VERSION}-alpine
+  <<: *node-cache
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/                    # Build-Artefakt fuer Deployment
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# Docker Image bauen (wenn Container Registry genutzt wird)
+docker:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -f docker/Dockerfile -t $IMAGE_TAG .
+    - docker tag $IMAGE_TAG $CI_REGISTRY_IMAGE:latest
+    - docker push $IMAGE_TAG
+    - docker push $CI_REGISTRY_IMAGE:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# -------------------------------------------
+# Stage 4: Deploy
+# -------------------------------------------
+
+deploy-staging:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Deploy to staging..."
+    # Variante A: Docker-basiert
+    # - ssh deploy@staging "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA && docker-compose up -d"
+    #
+    # Variante B: Statische Files kopieren
+    # - scp -r dist/* deploy@staging:/var/www/trading-frontend/
+    #
+    # Variante C: Kubernetes
+    # - kubectl set image deployment/frontend frontend=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  environment:
+    name: staging
+    url: https://trading-staging.ssw-internal.com
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy-production:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Deploy to production..."
+  environment:
+    name: production
+    url: https://trading.ssw-internal.com
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual    # Manueller Klick fuer Production

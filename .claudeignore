@@ -1,0 +1,18 @@
+# Secrets & Credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+
+# IDE & Editor secrets
+.idea/dataSources*
+.idea/httpRequests/
+
+# Docker secrets
+docker/.env
+docker/secrets/
+
+# Build artifacts with potential embedded secrets
+dist/

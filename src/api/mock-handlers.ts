@@ -2,11 +2,12 @@ import type { Trade } from "./types"
 import { mockTrades, mockPositions, mockUser, delay } from "./mock-data"
 
 // In-memory store for demo
-let trades = [...mockTrades]
+const trades = [...mockTrades]
 let nextId = 4
 
 export const mockApi = {
   auth: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async login(username: string, _password: string) {
       await delay()
       if (username === "demo") {

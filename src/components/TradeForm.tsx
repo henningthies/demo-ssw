@@ -61,6 +61,7 @@ export function TradeForm() {
   })
 
   const { fields, append, remove } = useFieldArray({ control, name: "legs" })
+  // eslint-disable-next-line react-hooks/incompatible-library
   const tradeType = watch("type")
   const legs = watch("legs")
 

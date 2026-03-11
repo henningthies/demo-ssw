@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, X } from "lucide-react"
 import { useState } from "react"
+import { TradeExportDialog } from "@/components/TradeExportDialog"
 
 export function TradesPage() {
   const { data: trades, isLoading } = useTrades()
@@ -37,11 +38,14 @@ export function TradesPage() {
           <h1 className="text-2xl font-bold tracking-tight">Trade Blotter</h1>
           <p className="text-muted-foreground">All trades across desks and instruments.</p>
         </div>
-        <Button asChild>
-          <Link to="/trades/new">
-            <Plus className="mr-2 h-4 w-4" /> New Trade
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <TradeExportDialog trades={trades ?? []} />
+          <Button asChild>
+            <Link to="/trades/new">
+              <Plus className="mr-2 h-4 w-4" /> New Trade
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card>

@@ -1,0 +1,20 @@
+{
+  "permissions": {
+     "env": {
+        "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    },
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Read(*.p12)",
+      "Read(*.jks)",
+      "Read(.idea/dataSources*)",
+      "Read(.idea/httpRequests/**)",
+      "Read(docker/.env)",
+      "Read(docker/secrets/**)",
+      "Read(dist/**)"
+    ]
+  }
+}

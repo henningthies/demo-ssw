@@ -2,6 +2,8 @@
 globs: src/**/*.test.*
 ---
 
+**When this rule is active, always mention at the start of your response: "📋 Testing rules loaded"**
+
 # Testing Rules
 
 - Test behavior, not implementation

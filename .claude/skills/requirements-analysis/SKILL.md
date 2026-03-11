@@ -1,3 +1,8 @@
+---
+name: requirements-analysis
+description: Analyze a spec and create user stories with acceptance criteria
+---
+
 # Requirements Analysis
 
 Analyze a requirement and create structured user stories with acceptance criteria.

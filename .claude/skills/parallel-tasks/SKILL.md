@@ -1,3 +1,8 @@
+---
+name: parallel-tasks
+description: Split feature into independent subtasks and execute in parallel
+---
+
 # Parallel Task Execution
 
 Split a feature into independent subtasks and execute them in parallel with multiple agents.

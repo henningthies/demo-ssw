@@ -29,6 +29,10 @@ Pages (routes) -> Components (UI) -> Hooks (logic) -> API layer (axios)
 
 Provider chain: QueryClientProvider > AuthProvider > SidebarProvider
 
+## Memory
+
+Save memory updates to `.claude/memory/MEMORY.md` in this project (not to the global `~/.claude/projects/` path).
+
 ## Commands
 
 ```bash

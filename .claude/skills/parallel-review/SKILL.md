@@ -1,3 +1,8 @@
+---
+name: parallel-review
+description: Run parallel code review (quality, security, performance)
+---
+
 # Parallel Code Review
 
 Start multiple review agents in parallel that review code from different perspectives.
